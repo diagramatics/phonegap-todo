@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<html ng-app="phonegapTodo">
+<head>
+  <!--
+  Customize this policy to fit your own app's needs. For more guidance, see:
+  https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
+  Some notes:
+  * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+  * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+  * Disables use of inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+  * Enable inline JS: add 'unsafe-inline' to default-src
+-->
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' ws://localhost:3000 'unsafe-inline' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *">
+
+<meta name="format-detection" content="telephone=no">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+<!-- bower:css -->
+<!-- endbower -->
+
+<title>Hello World</title>
+</head>
+<body>
+  <div class="app">
+    <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
+      <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--primary mdl-color-text--white-800">
+        <div class="mdl-layout__header-row">
+          <span class="mdl-layout-title">Phonegap Todo</span>
+        </div>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Phonegap Todo</span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link" href="">To-do</a>
+          <a class="mdl-navigation__link" href="">Finished</a>
+        </nav>
+      </div>
+      <div class="demo-ribbon mdl-color--primary"></div>
+      <main class="demo-main mdl-layout__content" ng-controller="TodoController as todo">
+        <div class="mdl-grid">
+          <div class="mdl-cell mdl-cell--2-col mdl-cell--1-col-tablet mdl-cell--hide-phone"></div>
+          <form class="mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col mdl-cell--10-col-tablet mdl-cell--12-col-phone" ng-submit="todo.addTodo()">
+            <div class="mdl-grid">
+              <div class="mdl-cell mdl-cell--10-col mdl-cell--6-col-tablet mdl-cell--3-col-phone mdl-cell--middle">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label add-todo-field">
+                  <input class="mdl-textfield__input" type="text" ng-model="todo.addTodo.field" id="addTodoField" />
+                  <label class="mdl-textfield__label" for="addTodoField">Add a todo...</label>
+                </div>
+              </div>
+              <div class="mdl-cell mdl-cell--2-col mdl-cell--1-col-phone mdl-cell--middle add-todo-actions">
+                <button type="submit" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon mdl-button--fab mdl-button--mini-fab mdl-button--colored" title="Add To-do">
+                  <i class="material-icons" ng-click="todo.addTodo()">keyboard_return</i>
+                </button>
+                <button type="button" class="mdl-button mdl-js-button mdl-button--icon add-todo-advanced" title="Advanced">
+                  <i class="material-icons">keyboard_arrow_down</i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="mdl-grid">
+          <div class="mdl-cell mdl-cell--1-col"></div>
+          <div class="mdl-color--white mdl-shadow--2dp content mdl-color-text--grey-800 mdl-cell mdl-cell--10-col">
+            <ul class="todo-list">
+              <li class="mdl-grid"  ng-repeat="todoItem in todo.todos | orderBy: todoItem.deadline">
+                <div class="mdl-cell mdl-cell--1-col mdl-cell--middle">
+                  <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkBoxDone">
+                    <input type="checkbox" id="checkBoxDone" class="mdl-checkbox__input" />
+                  </label>
+                </div>
+                <div class="mdl-cell mdl-cell--8-col mdl-cell--5-col-tablet mdl-cell--2-col-phone mdl-cell--middle">
+                  {{ todoItem.text }}
+                </div>
+                <div class="mdl-cell mdl-cell--2-col mdl-cell--1-col-tablet mdl-cell--1-col-phone mdl-cell--middle">
+                  <ng-pluralize count="todoItem.deadline" when="{
+                    '0': 'Today',
+                    '1': 'Tomorrow',
+                    'other': 'in {{ todoItem.deadline }} days'
+                  }"></ng-pluralize>
+                </div>
+                <div class="mdl-cell mdl-cell--1-col mdl-cell--hide-phone mdl-cell--middle todo-item-actions">
+                  <button type="button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" title="Advanced">
+                    <i class="material-icons">create</i>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <footer class="mdl-mini-footer todo-footer">
+          <div class="mdl-mini-footer__right-section">
+            <div class="mdl-logo">Title</div>
+            <ul class="mdl-mini-footer__link-list">
+              <li><a href="#">Help</a></li>
+              <li><a href="#">Privacy & Terms</a></li>
+            </ul>
+          </div>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <!-- bower:js -->
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/material-design-lite/material.min.js"></script>
+  <!-- endbower -->
+
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script type="text/javascript" src="js/app.js"></script>
+</body>
+</html>
