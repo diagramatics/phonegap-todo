@@ -3,24 +3,10 @@
 
 var app = angular.module('phonegapTodo', ['ngRoute']);
 
-app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider
-    .when('/', {
-      templateUrl: '/partials/todo-initial.html',
-      controller: 'TodoController as todo'
-    })
-    .when('/done', {
-      templateUrl: '/partials/todo-done.html',
-      controller: 'TodoDoneController as todoDone'
-    })
-    .otherwise({
-      redirectTo: '/'
-    });
-}]);
+app.factory('todo', [function() {
+  this.todos = {};
 
-app.controller('TodoController', ['$scope', function($scope) {
-  this.todos = [];
-
+  // Get todo ID
   this.lastTodoID = 1;
   var storedLastTodoID = window.localStorage.getItem('lastTodoID');
   if (storedLastTodoID && storedLastTodoID !== 'undefined') {
@@ -28,48 +14,113 @@ app.controller('TodoController', ['$scope', function($scope) {
     storedLastTodoID = undefined;
   }
 
+  // Get todo list
   var storedTodos = window.localStorage.getItem('todos');
   if (storedTodos && storedTodos !== 'undefined') {
     angular.copy(JSON.parse(storedTodos), this.todos);
     storedTodos = undefined;
   }
 
-  $scope.$watch(function() {
-    return this.todos;
-  }.bind(this), function(newValue, oldValue) {
-    window.localStorage.setItem('todos', JSON.stringify(newValue));
-  }.bind(this), true);
+  this.notifyTodoChange = function() {
+    window.localStorage.setItem('todos', JSON.stringify(this.todos));
+  }.bind(this);
 
-  $scope.$watch(function() {
-    return this.lastTodoID;
-  }.bind(this), function(newValue) {
-    window.localStorage.setItem('lastTodoID', newValue);
-  });
+  // Increment todo ID method
+  this.incrementTodoID = function() {
+    window.localStorage.setItem('lastTodoID', ++this.lastTodoID);
+    return this.lastTodoID - 1;
+  }.bind(this);
+
+  this.getAll = function() {
+    return this.todos;
+  }.bind(this);
+
+  this.getUndone = function() {
+    var result = {};
+    angular.forEach(this.todos, function(value, key) {
+      if (!value.done) {
+        result[key] = value;
+      }
+    });
+    return result;
+  }.bind(this);
+
+  this.getDone = function() {
+    var result = {};
+    angular.forEach(this.todos, function(value, key) {
+      if (value.done) {
+        result[key] = value;
+      }
+    });
+    return result;
+  }.bind(this);
+
+  // Add todo method
+  this.add = function(todoText) {
+    var id = this.incrementTodoID();
+    this.todos[id + ''] = {
+      id: id,
+      text: todoText,
+      done: false
+    };
+    this.notifyTodoChange();
+    return true;
+  }.bind(this);
+
+  this.markDone = function(todoID) {
+    this.todos[todoID].done = true;
+    this.notifyTodoChange();
+    return this.todos;
+  }.bind(this);
+
+  this.markUndone = function(todoID) {
+    this.todos.todoID.done = false;
+    this.notifyTodoChange();
+    return this.todos.todoID;
+  }.bind(this);
+
+  return this;
+}]);
+
+app.config(['$routeProvider', function($routeProvider) {
+  $routeProvider
+    .when('/', {
+      templateUrl: '/partials/todo-initial.html',
+      page: 'initial',
+      controller: 'TodoController as todo'
+    })
+    .when('/done', {
+      templateUrl: '/partials/todo-done.html',
+      page: 'done',
+      controller: 'TodoDoneController as todoDone'
+    })
+    .otherwise({
+      redirectTo: '/'
+    });
+}]);
+
+app.controller('TodoController', ['$scope', 'todo', function($scope, todo) {
+  this.addTodoView = {};
+  this.todos = todo.getUndone;
 
   this.addTodo = function() {
-    if (this.addTodo.field.match(/^\w/i)) {
-      this.todos.push({
-        id: this.lastTodoID++,
-        text: this.addTodo.field,
-        done: false
-      });
+    if (this.addTodoView.field.match(/^\w/i)) {
+      todo.add(this.addTodoView.field);
 
       // Reset the field
-      this.addTodo.field = '';
+      this.addTodoView.field = '';
     }
   };
 
-  this.markTodoAsDone = function(todoItem) {
-    todoItem.done = true;
+  this.markTodoAsDone = function(todoID) {
+    todo.markDone(todoID);
   };
 }]);
 
-app.controller('TodoDoneController', ['$scope', function($scope) {
-  this.todos = [];
+app.controller('TodoDoneController', ['$scope', 'todo', function($scope, todo) {
+  this.todos = todo.getDone;
 
-  var storedTodos = window.localStorage.getItem('todos');
-  if (storedTodos && storedTodos !== 'undefined') {
-    angular.copy(JSON.parse(storedTodos), this.todos);
-    storedTodos = undefined;
-  }
+  this.markTodoAsUndone = function(todoID) {
+    todo.markUndone(todoID);
+  };
 }]);
