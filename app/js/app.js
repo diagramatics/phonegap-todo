@@ -104,6 +104,7 @@ app.controller('MainController', ['$rootScope', '$location', function($rootScope
 
   $rootScope.$on('$locationChangeSuccess', function() {
     this.path = $location.path();
+    this.closeDrawer();
   }.bind(this));
 
   this.openDrawer = function() {
