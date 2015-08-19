@@ -1,5 +1,9 @@
 @import 'mdl-setup';
 
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link--current:hover {
+  background-color: unquote("rgb(#{$color-primary-dark})");
+}
+
 .demo-ribbon {
   height: 4rem;
   flex-shrink: 0;

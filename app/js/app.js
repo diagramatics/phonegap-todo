@@ -2,6 +2,22 @@
 /* global angular */
 
 var app = angular.module('phonegapTodo', ['ngRoute']);
+app.config(['$routeProvider', function($routeProvider) {
+  $routeProvider
+    .when('/', {
+      templateUrl: 'partials/todo-initial.html',
+      page: 'initial',
+      controller: 'TodoController as todo'
+    })
+    .when('/done', {
+      templateUrl: 'partials/todo-done.html',
+      page: 'done',
+      controller: 'TodoDoneController as todoDone'
+    })
+    .otherwise({
+      redirectTo: '/'
+    });
+}]);
 
 app.factory('todo', [function() {
   this.todos = {};
@@ -82,21 +98,22 @@ app.factory('todo', [function() {
   return this;
 }]);
 
-app.config(['$routeProvider', function($routeProvider) {
-  $routeProvider
-    .when('/', {
-      templateUrl: '/partials/todo-initial.html',
-      page: 'initial',
-      controller: 'TodoController as todo'
-    })
-    .when('/done', {
-      templateUrl: '/partials/todo-done.html',
-      page: 'done',
-      controller: 'TodoDoneController as todoDone'
-    })
-    .otherwise({
-      redirectTo: '/'
-    });
+app.controller('MainController', ['$rootScope', '$location', function($rootScope, $location) {
+  this.path = $location.path();
+
+
+  $rootScope.$on('$locationChangeSuccess', function() {
+    this.path = $location.path();
+  }.bind(this));
+
+  this.openDrawer = function() {
+    document.getElementById('mainDrawer').classList.add('is-visible');
+    console.log('asd');
+  }.bind(this);
+
+  this.closeDrawer = function() {
+    document.getElementById('mainDrawer').classList.remove('is-visible');
+  }.bind(this);
 }]);
 
 app.controller('TodoController', ['$scope', 'todo', function($scope, todo) {
@@ -123,4 +140,6 @@ app.controller('TodoDoneController', ['$scope', 'todo', function($scope, todo) {
   this.markTodoAsUndone = function(todoID) {
     todo.markUndone(todoID);
   };
+
+
 }]);

@@ -35,14 +35,16 @@ under the License.
 <meta name="msapplication-tap-highlight" content="no">
 <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
 
+<!-- build:css css/all.css -->
 <link rel="stylesheet" type="text/css" href="css/style.css">
+<!-- endbuild -->
 
 <!-- bower:css -->
 <!-- endbower -->
 
-<title>Hello World</title>
+<title>Phonegap Todo</title>
 </head>
-<body>
+<body ng-controller="MainController as main">
   <div class="app">
     <div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
       <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--primary mdl-color-text--white-800">
@@ -50,16 +52,16 @@ under the License.
           <span class="mdl-layout-title">Phonegap Todo</span>
         </div>
       </header>
-      <div class="mdl-layout__drawer">
+      <div id="mainDrawer" class="mdl-layout__drawer">
         <span class="mdl-layout-title">Phonegap Todo</span>
         <nav class="mdl-navigation">
-          <a class="mdl-navigation__link" ng-href="/#/">To-do</a>
-          <a class="mdl-navigation__link" ng-href="/#/done">Finished</a>
+          <a class="mdl-navigation__link" ng-class="{'mdl-navigation__link--current': main.path === '/'}" ng-click="main.closeDrawer()" ng-href="#/">To-do</a>
+          <a class="mdl-navigation__link" ng-class="{'mdl-navigation__link--current': main.path === '/done'}" ng-click="main.closeDrawer()" ng-href="#/done">Finished</a>
         </nav>
       </div>
       <div class="demo-ribbon mdl-color--primary"></div>
-      <main class="demo-main mdl-layout__content" ng-controller="TodoController as todo">
-        <div ng-view></div>
+      <main class="demo-main mdl-layout__content">
+        <div ng-view onload=""></div>
         <footer class="mdl-mini-footer todo-footer">
           <div class="mdl-mini-footer__right-section">
             <div class="mdl-logo">Phonegap Todo</div>
@@ -73,14 +75,17 @@ under the License.
     </div>
   </div>
 
+  <script type="text/javascript" src="cordova.js"></script>
+  <!-- build:js js/all.js -->
   <!-- bower:js -->
   <script src="bower_components/angular/angular.js"></script>
   <script src="bower_components/material-design-lite/material.min.js"></script>
   <script src="bower_components/angular-route/angular-route.js"></script>
+  <script src="bower_components/hammerjs/hammer.js"></script>
+  <script src="bower_components/ryanmullins-angular-hammer/angular.hammer.js"></script>
   <!-- endbower -->
-
-  <script type="text/javascript" src="cordova.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
   <script type="text/javascript" src="js/app.js"></script>
+  <!-- endbuild -->
 </body>
 </html>

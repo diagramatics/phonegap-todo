@@ -36,7 +36,6 @@ gulp.task('styles', () => {
     'app/scss/**/*.scss',
     'app/css/**/*.css'
   ])
-    .pipe($.changed('.tmp/css', {extension: '.css'}))
     .pipe($.sourcemaps.init())
     .pipe($.sass({
       precision: 10
@@ -62,28 +61,21 @@ gulp.task('wiredep', () => {
     .pipe(gulp.dest('app/scss'));
 });
 
+gulp.task('fonts', () => {
+  return gulp.src('app/fonts/*')
+    .pipe(gulp.dest('www/fonts'));
+});
+
 gulp.task('html', () => {
   const assets = $.useref.assets({searchPath: '{.tmp,app}'});
 
   return gulp.src('app/**/*.html')
     .pipe(assets)
-    // Remove any unused CSS
-    // Note: If not using the Style Guide, you can delete it from
-    // the next line to only include styles your project uses.
-    .pipe($.if('*.css', $.uncss({
-      html: [
-        'app/index.html'
-      ],
-      // CSS Selectors for UnCSS to ignore
-      ignore: [
-        /.navdrawer-container.open/,
-        /.app-bar.open/
-      ]
-    })))
 
     // Concatenate and minify styles
     // In case you are still using useref build blocks
     .pipe($.if('*.css', $.minifyCss()))
+    .pipe($.if('*.js', $.uglify()))
     .pipe(assets.restore())
     .pipe($.useref())
 
@@ -117,3 +109,5 @@ gulp.task('serve', ['styles'], () => {
   gulp.watch(['app/img/**/*'], reload);
   gulp.watch(['bower.json'], ['wiredep', reload]);
 });
+
+gulp.task('build', ['styles', 'fonts', 'html']);
