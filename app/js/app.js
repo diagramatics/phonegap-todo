@@ -135,12 +135,16 @@ app.controller('TodoController', ['$scope', 'todo', function($scope, todo) {
   };
 }]);
 
-app.controller('TodoDoneController', ['$scope', 'todo', function($scope, todo) {
+app.controller('TodoDoneController', ['$scope', 'todo', '$location', function($scope, todo, $location) {
   this.todos = todo.getDone;
 
   this.markTodoAsUndone = function(todoID) {
     todo.markUndone(todoID);
   };
 
-
+  var listenerBackToMain = function() {
+    $location.url('/');
+    document.removeEventListener('backbutton', listenerBackToMain);
+  };
+  document.addEventListener('backbutton', listenerBackToMain);
 }]);
